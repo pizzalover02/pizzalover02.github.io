@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://pizzalover02.github.io/sitemap.xml
+
+# Allow indexing of all pages
+Allow: /index.html
+Allow: /pages/
+Allow: /css/
+Allow: /js/ 
