@@ -138,30 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ===== TYPING ANIMATION FOR HERO TITLE =====
-    const titleHighlight = document.querySelector('.title-highlight');
-    if (titleHighlight) {
-        const text = titleHighlight.textContent;
-        titleHighlight.textContent = '';
-        titleHighlight.style.borderRight = '2px solid var(--deep-pink)';
-        
-        let i = 0;
-        const typeWriter = function() {
-            if (i < text.length) {
-                titleHighlight.textContent += text.charAt(i);
-                i++;
-                setTimeout(typeWriter, 100);
-            } else {
-                // Remove cursor after typing is complete
-                setTimeout(() => {
-                    titleHighlight.style.borderRight = 'none';
-                }, 500);
-            }
-        };
-        
-        // Start typing animation after a delay
-        setTimeout(typeWriter, 1000);
-    }
+
 
     // ===== CARD HOVER EFFECTS =====
     const cards = document.querySelectorAll('.about-card, .recipe-card, .study-card');
@@ -213,7 +190,8 @@ document.addEventListener('DOMContentLoaded', function() {
             left: 0;
             width: 0%;
             height: 3px;
-            background: linear-gradient(90deg, var(--accent-pink), var(--deep-pink));
+            background: var(--terminal-green);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.8);
             z-index: 1001;
             will-change: width;
             transition: none;
@@ -339,6 +317,8 @@ document.addEventListener('DOMContentLoaded', function() {
         titleObserver.observe(title);
     });
 
+
+
     // ===== EASTER EGG: KONAMI CODE =====
     let konamiCode = [];
     const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // Up Up Down Down Left Right Left Right B A
@@ -406,6 +386,8 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => message.remove(), 500);
         }, 3000);
     };
+
+
 });
 
 // ===== CSS ANIMATIONS =====
