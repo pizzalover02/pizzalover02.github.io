@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미안해 자기야</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 10px;
+            overflow-x: auto;
+            font-size: 8px;
+            line-height: 1;
+            white-space: pre;
+        }
+        
+        .ascii-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        
+        .extreme-text {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .korean-text, .love-text {
+            font-size: 4rem;
+            font-weight: 700;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Bradley Hand', cursive;
+            color: #ff69b4;
+            animation: bounce 2s ease-in-out infinite, glow 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.8);
+            margin: 20px 0;
+            letter-spacing: 0.2em;
+            position: relative;
+        }
+        
+        .love-text {
+            font-size: 3.5rem;
+        }
+        
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotateX(0deg); }
+            40% { transform: translateY(-20px) rotateX(10deg); }
+            60% { transform: translateY(-10px) rotateX(-5deg); }
+        }
+        
+        .flying-comments {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .comment {
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            opacity: 0;
+        }
+        
+        .circling-elements {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            pointer-events: none;
+        }
+        
+        .circling-elements .heart {
+            left: 50%;
+            top: 50%;
+            transform-origin: 50% 50%;
+        }
+        
+        .heart {
+            position: absolute;
+            font-size: 2.5rem;
+            font-weight: bold;
+            opacity: 0.9;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+            background: linear-gradient(45deg, #ff1493, #ff69b4, #ff6fa8, #ffb6c1);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.8)) drop-shadow(0 0 15px rgba(255, 20, 147, 0.6));
+            animation: heartRadiate 3s ease-in-out infinite;
+        }
+        
+        .heart::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba(255, 105, 180, 0.3) 0%, rgba(255, 20, 147, 0.2) 50%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: pinkRadiate 2s ease-in-out infinite alternate;
+            z-index: -1;
+        }
+        
+        .heart.style1 { color: #ff1493; }
+        .heart.style2 { color: #ff69b4; }
+        .heart.style3 { color: #ff6fa8; }
+        .heart.style4 { color: #ffb6c1; }
+        .heart.style5 { color: #ff20b2; }
+        
+
+        
+        @keyframes flyLeftToRight {
+            0% { 
+                left: -200px;
+                top: var(--start-y);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            50% { 
+                left: 50vw;
+                top: 50vh;
+                opacity: 1;
+            }
+            90% { opacity: 1; }
+            100% { 
+                left: calc(100vw + 200px);
+                top: var(--start-y);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes flyRightToLeft {
+            0% { 
+                left: calc(100vw + 200px);
+                top: var(--start-y);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            50% { 
+                left: 50vw;
+                top: 50vh;
+                opacity: 1;
+            }
+            90% { opacity: 1; }
+            100% { 
+                left: -200px;
+                top: var(--start-y);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes flyTopToBottom {
+            0% { 
+                left: var(--start-x);
+                top: -100px;
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            50% { 
+                left: 50vw;
+                top: 50vh;
+                opacity: 1;
+            }
+            90% { opacity: 1; }
+            100% { 
+                left: var(--start-x);
+                top: calc(100vh + 100px);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes flyBottomToTop {
+            0% { 
+                left: var(--start-x);
+                top: calc(100vh + 100px);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            50% { 
+                left: 50vw;
+                top: 50vh;
+                opacity: 1;
+            }
+            90% { opacity: 1; }
+            100% { 
+                left: var(--start-x);
+                top: -100px;
+                opacity: 0;
+            }
+        }
+        
+        @keyframes flyDiagonalTLBR {
+            0% { 
+                left: -200px;
+                top: -100px;
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            50% { 
+                left: 50vw;
+                top: 50vh;
+                opacity: 1;
+            }
+            90% { opacity: 1; }
+            100% { 
+                left: calc(100vw + 200px);
+                top: calc(100vh + 100px);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes flyDiagonalTRBL {
+            0% { 
+                left: calc(100vw + 200px);
+                top: -100px;
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            50% { 
+                left: 50vw;
+                top: 50vh;
+                opacity: 1;
+            }
+            90% { opacity: 1; }
+            100% { 
+                left: -200px;
+                top: calc(100vh + 100px);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes flyDiagonalBLTR {
+            0% { 
+                left: -200px;
+                top: calc(100vh + 100px);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            50% { 
+                left: 50vw;
+                top: 50vh;
+                opacity: 1;
+            }
+            90% { opacity: 1; }
+            100% { 
+                left: calc(100vw + 200px);
+                top: -100px;
+                opacity: 0;
+            }
+        }
+        
+        @keyframes flyDiagonalBRTL {
+            0% { 
+                left: calc(100vw + 200px);
+                top: calc(100vh + 100px);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            50% { 
+                left: 50vw;
+                top: 50vh;
+                opacity: 1;
+            }
+            90% { opacity: 1; }
+            100% { 
+                left: -200px;
+                top: -100px;
+                opacity: 0;
+            }
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1.1); }
+            50% { transform: scale(1.3); }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .ascii-art {
+            font-size: 6px;
+            line-height: 0.8;
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(255, 105, 180, 0.8); }
+            to { text-shadow: 0 0 40px rgba(255, 20, 147, 1), 0 0 60px rgba(255, 105, 180, 0.9); }
+        }
+        
+        @keyframes circleClockwise {
+            0% { transform: rotate(0deg) translateX(250px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(250px) rotate(-360deg); }
+        }
+        
+        @keyframes circleCounterClockwise {
+            0% { transform: rotate(0deg) translateX(200px) rotate(0deg); }
+            100% { transform: rotate(-360deg) translateX(200px) rotate(360deg); }
+        }
+        
+        @keyframes circleSmall {
+            0% { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+        }
+        
+        @keyframes circleLarge {
+            0% { transform: rotate(0deg) translateX(300px) rotate(0deg); }
+            100% { transform: rotate(-360deg) translateX(300px) rotate(360deg); }
+        }
+        
+        @keyframes heartGlow {
+            0% { 
+                filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.8)) drop-shadow(0 0 15px rgba(255, 20, 147, 0.6));
+                background-position: 0% 50%;
+            }
+            100% { 
+                filter: drop-shadow(0 0 20px rgba(255, 105, 180, 1)) drop-shadow(0 0 30px rgba(255, 20, 147, 0.9));
+                background-position: 100% 50%;
+            }
+        }
+        
+        @keyframes heartFloat {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-5px) scale(1.1); }
+        }
+        
+        @keyframes heartRadiate {
+            0%, 100% { 
+                filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.8)) drop-shadow(0 0 15px rgba(255, 20, 147, 0.6));
+                transform: scale(1);
+            }
+            50% { 
+                filter: drop-shadow(0 0 20px rgba(255, 105, 180, 1)) drop-shadow(0 0 30px rgba(255, 20, 147, 0.9)) drop-shadow(0 0 40px rgba(255, 105, 180, 0.5));
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes pinkRadiate {
+            0% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.3;
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0.1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .korean-text, .love-text {
+                font-size: 2.5rem;
+                letter-spacing: 0.1em;
+            }
+            .love-text {
+                font-size: 2rem;
+            }
+            .circling-elements {
+                width: 400px;
+                height: 400px;
+            }
+            .heart {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .korean-text, .love-text {
+                font-size: 2rem;
+                letter-spacing: 0.05em;
+            }
+            .love-text {
+                font-size: 1.5rem;
+            }
+            .comment {
+                font-size: 1rem;
+            }
+            .circling-elements {
+                width: 300px;
+                height: 300px;
+            }
+            .heart {
+                font-size: 1rem;
+            }
+            .ascii-art {
+                font-size: 4px;
+                line-height: 0.7;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ascii-container">
+        <div class="flying-comments">
+            <div class="comment">사랑해</div>
+            <div class="comment">미안해</div>
+            <div class="comment">희연이 최고</div>
+            <div class="comment">잘할게</div>
+            <div class="comment">한번만 봐줘</div>
+            <div class="comment">내 기요미</div>
+            <div class="comment">내 사랑</div>
+            <div class="comment">노력할게</div>
+            <div class="comment">보고싶어</div>
+            <div class="comment">알콩씨</div>
+            <div class="comment">I miss you</div>
+            <div class="comment">I love you</div>
+        </div>
+        <div class="extreme-text">
+            <div class="korean-text">미안해 자기야</div>
+            <div class="love-text">사랑해</div>
+            <div class="circling-elements">
+                <div class="heart style1" style="animation: circleClockwise 8s linear infinite;"><i class="fas fa-heart"></i></div>
+                <div class="heart style2" style="animation: circleCounterClockwise 6s linear infinite;"><i class="fas fa-heart-pulse"></i></div>
+                <div class="heart style3" style="animation: circleSmall 4s linear infinite;"><i class="fas fa-heart"></i></div>
+                <div class="heart style4" style="animation: circleLarge 10s linear infinite;"><i class="fas fa-heart"></i></div>
+                <div class="heart style5" style="animation: circleClockwise 7s linear infinite;"><i class="fas fa-heart"></i></div>
+                <div class="heart style1" style="animation: circleCounterClockwise 9s linear infinite;"><i class="fas fa-heart-pulse"></i></div>
+                <div class="heart style2" style="animation: circleSmall 5s linear infinite;"><i class="fas fa-heart"></i></div>
+                <div class="heart style3" style="animation: circleLarge 11s linear infinite;"><i class="fas fa-heart-pulse"></i></div>
+                <div class="heart style4" style="animation: circleClockwise 12s linear infinite;"><i class="fas fa-heart"></i></div>
+                <div class="heart style5" style="animation: circleCounterClockwise 14s linear infinite;"><i class="fas fa-heart"></i></div>
+            </div>
+        </div>
+
+    </div>
+    
+    <script>
+        const colors = [
+            '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff',
+            '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff',
+            '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff'
+        ];
+        
+        const animations = [
+            'flyLeftToRight', 'flyRightToLeft', 'flyTopToBottom', 'flyBottomToTop',
+            'flyDiagonalTLBR', 'flyDiagonalTRBL', 'flyDiagonalBLTR', 'flyDiagonalBRTL'
+        ];
+        
+        const leftPositions = [
+            { top: '10%', left: '-20%' },
+            { top: '25%', left: '-20%' },
+            { top: '40%', left: '-20%' },
+            { top: '55%', left: '-20%' },
+            { top: '70%', left: '-20%' },
+            { top: '85%', left: '-20%' }
+        ];
+        
+        const rightPositions = [
+            { top: '15%', left: '120%' },
+            { top: '30%', left: '120%' },
+            { top: '45%', left: '120%' },
+            { top: '60%', left: '120%' },
+            { top: '75%', left: '120%' },
+            { top: '90%', left: '120%' }
+        ];
+        
+        const topPositions = [
+            { top: '-20%', left: '15%' },
+            { top: '-20%', left: '30%' },
+            { top: '-20%', left: '45%' },
+            { top: '-20%', left: '60%' },
+            { top: '-20%', left: '75%' },
+            { top: '-20%', left: '90%' }
+        ];
+        
+        const bottomPositions = [
+            { top: '120%', left: '20%' },
+            { top: '120%', left: '35%' },
+            { top: '120%', left: '50%' },
+            { top: '120%', left: '65%' },
+            { top: '120%', left: '80%' },
+            { top: '120%', left: '95%' }
+        ];
+        
+        function getRandomElement(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+        
+        function getRandomDuration() {
+            return Math.random() * 4 + 6; // 6-10 seconds (much slower)
+        }
+        
+        function getRandomDelay() {
+            return Math.random() * 2; // 0-2 seconds
+        }
+        
+        function randomizeComment(comment) {
+            const color = getRandomElement(colors);
+            const animation = getRandomElement(animations);
+            const duration = getRandomDuration();
+            const delay = getRandomDelay();
+            
+            // Choose position based on animation direction
+            let position;
+            if (animation === 'flyLeftToRight') {
+                position = getRandomElement(leftPositions);
+            } else if (animation === 'flyRightToLeft') {
+                position = getRandomElement(rightPositions);
+            } else if (animation === 'flyTopToBottom') {
+                position = getRandomElement(topPositions);
+            } else if (animation === 'flyBottomToTop') {
+                position = getRandomElement(bottomPositions);
+            } else if (animation === 'flyDiagonalTLBR') {
+                position = getRandomElement(topPositions.concat(leftPositions));
+            } else if (animation === 'flyDiagonalTRBL') {
+                position = getRandomElement(topPositions.concat(rightPositions));
+            } else if (animation === 'flyDiagonalBLTR') {
+                position = getRandomElement(bottomPositions.concat(leftPositions));
+            } else if (animation === 'flyDiagonalBRTL') {
+                position = getRandomElement(bottomPositions.concat(rightPositions));
+            } else {
+                position = getRandomElement(leftPositions); // default
+            }
+            
+            comment.style.color = color;
+            comment.style.textShadow = `0 0 10px ${color}`;
+            comment.style.top = position.top;
+            comment.style.left = position.left;
+            
+            // Set CSS custom properties for center-through calculations
+            comment.style.setProperty('--start-x', position.left);
+            comment.style.setProperty('--start-y', position.top);
+            
+            comment.style.animation = `${animation} ${duration}s linear infinite`;
+            comment.style.animationDelay = `${delay}s`;
+        }
+        
+        function initializeComments() {
+            const comments = document.querySelectorAll('.comment');
+            comments.forEach(comment => {
+                randomizeComment(comment);
+                
+                // Re-randomize after each animation cycle
+                comment.addEventListener('animationiteration', () => {
+                    randomizeComment(comment);
+                });
+            });
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeComments);
+        
+        // Re-randomize every 10 seconds as backup
+        setInterval(() => {
+            const comments = document.querySelectorAll('.comment');
+            comments.forEach(comment => {
+                randomizeComment(comment);
+            });
+        }, 10000);
+    </script>
+</body>
+</html> 
