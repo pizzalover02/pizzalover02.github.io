@@ -1,64 +1,43 @@
-# pizzalover02.github.io
+# Dr. Brianna Rhee - AI Research Scientist Portfolio
 
-## Welcome to My Cozy Corner! 🌸
+A modern, professional portfolio website showcasing the work of an elite AI researcher with experience at OpenAI, Google DeepMind, and Anthropic.
 
-A beautiful, modern website featuring cute aesthetics, cooking adventures, study tips, and positive vibes. Built with love for GitHub Pages.
+## Features
 
-### ✨ Features
+- **Dark Theme Design** - Sleek, modern aesthetic with gradient accents
+- **Animated UI** - Smooth scroll animations, typing effects, and interactive elements
+- **Responsive Layout** - Optimized for all screen sizes from mobile to desktop
+- **Performance Optimized** - Uses requestAnimationFrame for smooth animations
 
-- **Soft Pink & White Design**: Elegant color palette with luxurious animations
-- **Responsive Layout**: Beautiful on all devices
-- **Smooth Animations**: CSS transitions and JavaScript interactions
-- **Multiple Pages**: Easily expandable structure
-- **Modern Typography**: Google Fonts (Poppins & Dancing Script)
-- **Interactive Elements**: Hover effects, floating shapes, and scroll animations
-- **Accessibility**: Semantic HTML and ARIA-friendly design
+## Sections
 
-### 🍕 Sections
+- **Hero** - Introduction with animated stats and code window
+- **About** - Background, experience timeline, and technical skills
+- **Research** - Focus areas including LLMs, AI Safety, NAS, and more
+- **Publications** - Selected peer-reviewed papers with citations
+- **Talks** - Keynotes and presentations at major conferences
+- **Contact** - Professional contact information and terminal-style bio
 
-- **Home**: Welcome page with animated hero section
-- **About**: Personal introduction with cute icons
-- **Cooking**: Recipe collection and culinary adventures
-- **Study**: Learning tips, resources, and positive study vibes
-- **Contact**: Ways to connect and spread positivity
-
-### 🛠️ Technologies Used
+## Tech Stack
 
 - HTML5
-- CSS3 (Custom properties, Grid, Flexbox, Animations)
-- Vanilla JavaScript
-- Font Awesome icons
-- Google Fonts
+- CSS3 (Custom Properties, Grid, Flexbox, Animations)
+- Vanilla JavaScript (ES6+)
+- Google Fonts (Outfit, JetBrains Mono)
+- Font Awesome Icons
 
-### 🚀 Getting Started
+## Local Development
 
-This website is designed for GitHub Pages. Simply:
+Simply open `index.html` in a web browser, or use a local server:
 
-1. Clone this repository
-2. Enable GitHub Pages in repository settings
-3. Your site will be available at `https://pizzalover02.github.io`
+```bash
+# Using Python
+python -m http.server 8000
 
-### 📁 Project Structure
-
-```
-├── index.html          # Main homepage
-├── css/
-│   └── style.css       # Main stylesheet with animations
-├── js/
-│   └── main.js         # Interactive functionality
-├── pages/
-│   ├── cooking.html    # Cooking adventures page
-│   └── study.html      # Study tips and resources
-└── README.md          # This file
+# Using Node.js
+npx serve
 ```
 
-### 💖 Keywords & Themes
+## License
 
-- **Cute**: Adorable design elements and friendly aesthetics
-- **Cooking**: Recipe sharing and culinary creativity
-- **Study**: Learning resources and educational content
-- **Positive**: Uplifting messages and encouraging vibes
-
----
-
-Made with 💝 and lots of positivity by pizzalover02
+MIT License

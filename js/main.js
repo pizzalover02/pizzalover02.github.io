@@ -1,4 +1,5 @@
-// ===== SMOOTH SCROLL AND NAVIGATION =====
+// ===== AI RESEARCHER PORTFOLIO - MAIN JAVASCRIPT =====
+
 document.addEventListener('DOMContentLoaded', function() {
     // Elements
     const navbar = document.getElementById('navbar');
@@ -6,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const navMenu = document.getElementById('nav-menu');
     const navLinks = document.querySelectorAll('.nav-link');
 
-    // ===== NAVBAR SCROLL EFFECT (THROTTLED) =====
+    // ===== NAVBAR SCROLL EFFECT =====
     let ticking = false;
     
     function updateNavbar() {
@@ -25,13 +26,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ===== MOBILE NAVIGATION TOGGLE =====
+    // ===== MOBILE NAVIGATION =====
     hamburger.addEventListener('click', function() {
         hamburger.classList.toggle('active');
         navMenu.classList.toggle('active');
     });
 
-    // Close mobile menu when clicking on nav links
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
             hamburger.classList.remove('active');
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Close mobile menu when clicking outside
+    // Close menu on outside click
     document.addEventListener('click', function(event) {
         const isClickInsideNav = navbar.contains(event.target);
         if (!isClickInsideNav && navMenu.classList.contains('active')) {
@@ -48,14 +48,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ===== SMOOTH SCROLLING FOR ANCHOR LINKS =====
+    // ===== SMOOTH SCROLLING =====
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             const targetId = this.getAttribute('href');
             
-            // Handle home link
-            if (targetId === '#' || targetId === '') {
+            if (targetId === '#' || targetId === '#home') {
                 window.scrollTo({
                     top: 0,
                     behavior: 'smooth'
@@ -64,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const targetSection = document.querySelector(targetId);
-            
             if (targetSection) {
                 const navHeight = navbar.offsetHeight;
                 const targetPosition = targetSection.offsetTop - navHeight;
@@ -77,56 +75,144 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ===== OPTIMIZED INTERSECTION OBSERVER FOR ANIMATIONS =====
+    // ===== ANIMATED STAT COUNTERS =====
+    const statNumbers = document.querySelectorAll('.stat-number');
+    let statsAnimated = false;
+
+    function animateStats() {
+        if (statsAnimated) return;
+        
+        const heroSection = document.querySelector('.hero');
+        const heroRect = heroSection.getBoundingClientRect();
+        
+        if (heroRect.top < window.innerHeight && heroRect.bottom > 0) {
+            statsAnimated = true;
+            
+            statNumbers.forEach(stat => {
+                const target = parseInt(stat.getAttribute('data-count'));
+                const duration = 2000;
+                const increment = target / (duration / 16);
+                let current = 0;
+                
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < target) {
+                        stat.textContent = Math.floor(current).toLocaleString();
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        stat.textContent = target.toLocaleString();
+                    }
+                };
+                
+                updateCounter();
+            });
+        }
+    }
+
+    // Initial check
+    animateStats();
+    window.addEventListener('scroll', animateStats);
+
+    // ===== TYPING EFFECT FOR ROLE =====
+    const typingElement = document.querySelector('.typing-text');
+    if (typingElement) {
+        const roles = [
+            'AI Research Scientist',
+            'LLM Architect',
+            'Neural Network Engineer',
+            'ML Infrastructure Lead',
+            'AI Safety Researcher'
+        ];
+        let roleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typingSpeed = 100;
+
+        function typeRole() {
+            const currentRole = roles[roleIndex];
+            
+            if (isDeleting) {
+                typingElement.textContent = currentRole.substring(0, charIndex - 1);
+                charIndex--;
+                typingSpeed = 50;
+            } else {
+                typingElement.textContent = currentRole.substring(0, charIndex + 1);
+                charIndex++;
+                typingSpeed = 100;
+            }
+
+            if (!isDeleting && charIndex === currentRole.length) {
+                isDeleting = true;
+                typingSpeed = 2000; // Pause at end
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                roleIndex = (roleIndex + 1) % roles.length;
+                typingSpeed = 500; // Pause before new word
+            }
+
+            setTimeout(typeRole, typingSpeed);
+        }
+
+        // Start after initial animation
+        setTimeout(typeRole, 3000);
+    }
+
+    // ===== INTERSECTION OBSERVER FOR ANIMATIONS =====
     const observerOptions = {
-        threshold: 0.15,
-        rootMargin: '0px 0px -30px 0px'
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
     };
 
-    const observer = new IntersectionObserver(function(entries) {
+    const fadeInObserver = new IntersectionObserver(function(entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('animate-in');
-                // Stop observing once animated to improve performance
-                observer.unobserve(entry.target);
+                fadeInObserver.unobserve(entry.target);
             }
         });
     }, observerOptions);
 
-    // Observe sections for animation (reduced set for better performance)
-    const animatedElements = document.querySelectorAll('.section');
-    animatedElements.forEach(el => {
-        observer.observe(el);
-    });
-
-    // ===== FLOATING SHAPES MOUSE INTERACTION =====
-    const shapes = document.querySelectorAll('.shape');
+    // Observe elements for animation
+    const animatedElements = document.querySelectorAll(
+        '.section-header, .about-text, .experience-timeline, .skills-section, ' +
+        '.research-card, .publication-item, .talk-card, .contact-card, .terminal-window'
+    );
     
-    shapes.forEach(shape => {
-        shape.addEventListener('mouseenter', function() {
-            this.style.transform = 'scale(1.2) rotate(180deg)';
-            this.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-        });
+    animatedElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+        fadeInObserver.observe(el);
+    });
 
-        shape.addEventListener('mouseleave', function() {
-            this.style.transform = 'scale(1) rotate(0deg)';
+    // Add animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+        .animate-in {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // ===== STAGGERED ANIMATION FOR GRIDS =====
+    const staggeredContainers = document.querySelectorAll('.research-grid, .talks-grid, .publications-list');
+    
+    staggeredContainers.forEach(container => {
+        const items = container.children;
+        Array.from(items).forEach((item, index) => {
+            item.style.transitionDelay = `${index * 0.1}s`;
         });
     });
 
-    // ===== OPTIMIZED PARALLAX EFFECT FOR HERO SECTION =====
+    // ===== PARALLAX EFFECT FOR BACKGROUND =====
     let parallaxTicking = false;
-    const parallaxElements = document.querySelectorAll('.floating-shapes .shape');
+    const bgGradient = document.querySelector('.bg-gradient');
     
     function updateParallax() {
-        const scrolled = window.pageYOffset;
-        const speed = 0.3; // Reduced for smoother performance
-        
-        // Only apply parallax when in viewport
-        if (scrolled < window.innerHeight) {
-            parallaxElements.forEach((element, index) => {
-                const yPos = -(scrolled * speed * (index + 1) * 0.05);
-                element.style.transform = `translate3d(0, ${yPos}px, 0)`;
-            });
+        if (bgGradient) {
+            const scrolled = window.pageYOffset;
+            bgGradient.style.transform = `translateY(${scrolled * 0.3}px)`;
         }
         parallaxTicking = false;
     }
@@ -136,17 +222,6 @@ document.addEventListener('DOMContentLoaded', function() {
             requestAnimationFrame(updateParallax);
             parallaxTicking = true;
         }
-    });
-
-
-
-    // ===== CARD HOVER EFFECTS =====
-    const cards = document.querySelectorAll('.about-card, .recipe-card, .study-card');
-    
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        });
     });
 
     // ===== BUTTON RIPPLE EFFECT =====
@@ -163,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ripple.style.cssText = `
                 position: absolute;
                 border-radius: 50%;
-                background: rgba(255, 255, 255, 0.6);
+                background: rgba(255, 255, 255, 0.3);
                 transform: scale(0);
                 animation: ripple 0.6s linear;
                 width: ${size}px;
@@ -173,155 +248,187 @@ document.addEventListener('DOMContentLoaded', function() {
                 pointer-events: none;
             `;
             
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
             this.appendChild(ripple);
             
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
+            setTimeout(() => ripple.remove(), 600);
         });
     });
 
-    // ===== OPTIMIZED SCROLL PROGRESS INDICATOR =====
-    const createScrollProgress = function() {
-        const progressBar = document.createElement('div');
-        progressBar.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 0%;
-            height: 3px;
-            background: var(--terminal-green);
-            box-shadow: 0 0 10px rgba(0, 255, 65, 0.8);
-            z-index: 1001;
-            will-change: width;
-            transition: none;
-        `;
-        document.body.appendChild(progressBar);
-
-        let progressTicking = false;
-        
-        function updateProgress() {
-            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrolled = (winScroll / height) * 100;
-            progressBar.style.width = scrolled + '%';
-            progressTicking = false;
+    // Add ripple animation
+    const rippleStyle = document.createElement('style');
+    rippleStyle.textContent = `
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
+    `;
+    document.head.appendChild(rippleStyle);
 
-        window.addEventListener('scroll', function() {
-            if (!progressTicking) {
-                requestAnimationFrame(updateProgress);
-                progressTicking = true;
+    // ===== CODE WINDOW SYNTAX HIGHLIGHTING ANIMATION =====
+    const codeContent = document.querySelector('.code-content code');
+    if (codeContent) {
+        // Add subtle glow animation to code window on hover
+        const codeWindow = document.querySelector('.code-window');
+        if (codeWindow) {
+            codeWindow.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 0 60px rgba(99, 102, 241, 0.3)';
+                this.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+            });
+            codeWindow.addEventListener('mouseleave', function() {
+                this.style.boxShadow = '';
+                this.style.borderColor = '';
+            });
+        }
+    }
+
+    // ===== ACTIVE NAV LINK HIGHLIGHTING =====
+    const sections = document.querySelectorAll('section[id]');
+    
+    function updateActiveLink() {
+        const scrollPos = window.scrollY + 100;
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+            const sectionId = section.getAttribute('id');
+            
+            if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${sectionId}`) {
+                        link.classList.add('active');
+                    }
+                });
             }
-        });
-    };
-
-    createScrollProgress();
-
-    // ===== LOGO LONG PRESS FUNCTIONALITY =====
-    const logo = document.querySelector('.logo-text');
-    let pressTimer = null;
-    let isLongPress = false;
-
-    if (logo) {
-        // Mouse down - start timer
-        logo.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            isLongPress = false;
-            
-            pressTimer = setTimeout(function() {
-                isLongPress = true;
-                // Add visual feedback for long press
-                logo.style.transform = 'scale(1.1)';
-                logo.style.transition = 'transform 0.2s ease';
-                
-                // Redirect to rexyrex.github.io after long press
-                setTimeout(() => {
-                    window.open('https://rexyrex.github.io', '_blank');
-                }, 100);
-            }, 800); // 0.8 seconds
-        });
-
-        // Mouse up - handle click or cancel long press
-        logo.addEventListener('mouseup', function(e) {
-            clearTimeout(pressTimer);
-            
-            // Reset visual state
-            logo.style.transform = 'scale(1)';
-            
-            // If it wasn't a long press, do normal navigation
-            if (!isLongPress) {
-                window.location.href = '/';
-            }
-        });
-
-        // Mouse leave - cancel long press
-        logo.addEventListener('mouseleave', function(e) {
-            clearTimeout(pressTimer);
-            logo.style.transform = 'scale(1)';
-            isLongPress = false;
-        });
-
-        // Touch events for mobile
-        logo.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            isLongPress = false;
-            
-            pressTimer = setTimeout(function() {
-                isLongPress = true;
-                logo.style.transform = 'scale(1.1)';
-                logo.style.transition = 'transform 0.2s ease';
-                
-                setTimeout(() => {
-                    window.open('https://rexyrex.github.io', '_blank');
-                }, 100);
-            }, 800);
-        });
-
-        logo.addEventListener('touchend', function(e) {
-            clearTimeout(pressTimer);
-            logo.style.transform = 'scale(1)';
-            
-            if (!isLongPress) {
-                window.location.href = '/';
-            }
-        });
-
-        logo.addEventListener('touchmove', function(e) {
-            clearTimeout(pressTimer);
-            logo.style.transform = 'scale(1)';
-            isLongPress = false;
         });
     }
 
-    // ===== CONTACT FORM ANIMATION (if form exists) =====
-    const contactItems = document.querySelectorAll('.contact-item');
-    
-    contactItems.forEach((item, index) => {
-        item.style.animationDelay = `${index * 0.2}s`;
-        item.classList.add('fade-in-up');
-    });
+    window.addEventListener('scroll', updateActiveLink);
+    updateActiveLink();
 
-    // ===== SECTION TITLE ANIMATION =====
-    const sectionTitles = document.querySelectorAll('.section-title');
-    
-    const titleObserver = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.animation = 'fadeInUp 0.8s ease-out forwards';
-            }
+    // Add active link style
+    const activeLinkStyle = document.createElement('style');
+    activeLinkStyle.textContent = `
+        .nav-link.active {
+            color: var(--text-primary);
+        }
+        .nav-link.active::after {
+            width: 100%;
+        }
+    `;
+    document.head.appendChild(activeLinkStyle);
+
+    // ===== PUBLICATION CARDS HOVER EFFECT =====
+    const pubItems = document.querySelectorAll('.publication-item');
+    pubItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.background = 'linear-gradient(145deg, rgba(99, 102, 241, 0.05), rgba(26, 26, 37, 0.9))';
         });
-    }, { threshold: 0.5 });
-
-    sectionTitles.forEach(title => {
-        titleObserver.observe(title);
+        item.addEventListener('mouseleave', function() {
+            this.style.background = '';
+        });
     });
 
+    // ===== TALK CARDS VIDEO OVERLAY =====
+    const talkCards = document.querySelectorAll('.talk-card');
+    talkCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Add subtle pulse effect on click
+            this.style.animation = 'pulse 0.3s ease';
+            setTimeout(() => {
+                this.style.animation = '';
+            }, 300);
+        });
+    });
 
+    // Add pulse animation
+    const pulseStyle = document.createElement('style');
+    pulseStyle.textContent = `
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+    `;
+    document.head.appendChild(pulseStyle);
+
+    // ===== SKILL TAGS HOVER EFFECT =====
+    const skillTags = document.querySelectorAll('.skill-tag');
+    skillTags.forEach(tag => {
+        tag.addEventListener('mouseenter', function() {
+            // Highlight related tags
+            const tagText = this.textContent.toLowerCase();
+            skillTags.forEach(otherTag => {
+                if (otherTag !== this) {
+                    otherTag.style.opacity = '0.5';
+                }
+            });
+        });
+        tag.addEventListener('mouseleave', function() {
+            skillTags.forEach(otherTag => {
+                otherTag.style.opacity = '1';
+            });
+        });
+    });
+
+    // ===== TERMINAL TYPING EFFECT =====
+    const terminalOutput = document.querySelectorAll('.terminal-content .output');
+    terminalOutput.forEach(output => {
+        const text = output.innerHTML;
+        output.innerHTML = '';
+        let i = 0;
+        
+        function typeTerminal() {
+            if (i < text.length) {
+                output.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typeTerminal, 10);
+            }
+        }
+        
+        // Trigger when terminal is visible
+        const terminalObserver = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    setTimeout(typeTerminal, 500);
+                    terminalObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        terminalObserver.observe(output.closest('.terminal-window'));
+    });
+
+    // ===== SCROLL PROGRESS INDICATOR =====
+    const progressBar = document.createElement('div');
+    progressBar.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 2px;
+        background: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7);
+        z-index: 1001;
+        transition: width 0.1s ease;
+    `;
+    document.body.appendChild(progressBar);
+
+    function updateProgress() {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        progressBar.style.width = scrolled + '%';
+    }
+
+    window.addEventListener('scroll', updateProgress);
 
     // ===== EASTER EGG: KONAMI CODE =====
     let konamiCode = [];
-    const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // Up Up Down Down Left Right Left Right B A
+    const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
 
     document.addEventListener('keydown', function(e) {
         konamiCode.push(e.keyCode);
@@ -335,110 +442,87 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    const triggerEasterEgg = function() {
-        // Create confetti effect
-        const colors = ['#e8b4b8', '#d4949a', '#f5d7d7', '#f8e8e8'];
-        
-        for (let i = 0; i < 50; i++) {
-            setTimeout(() => {
-                const confetti = document.createElement('div');
-                confetti.style.cssText = `
-                    position: fixed;
-                    top: -10px;
-                    left: ${Math.random() * 100}%;
-                    width: 10px;
-                    height: 10px;
-                    background: ${colors[Math.floor(Math.random() * colors.length)]};
-                    border-radius: 50%;
-                    pointer-events: none;
-                    z-index: 9999;
-                    animation: fall 3s linear forwards;
-                `;
-                document.body.appendChild(confetti);
-                
-                setTimeout(() => confetti.remove(), 3000);
-            }, i * 50);
-        }
-        
-        // Show easter egg message
-        const message = document.createElement('div');
-        message.style.cssText = `
+    function triggerEasterEgg() {
+        const overlay = document.createElement('div');
+        overlay.style.cssText = `
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(232, 180, 184, 0.3);
-            text-align: center;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             z-index: 10000;
-            animation: fadeInUp 0.5s ease-out;
+            animation: fadeIn 0.5s ease;
         `;
-        message.innerHTML = `
-            <h3 style="color: var(--deep-pink); margin-bottom: 1rem;">🎉 You found the secret!</h3>
-            <p style="color: var(--text-light);">Thanks for exploring! Have a pizza slice on me! 🍕</p>
+        overlay.innerHTML = `
+            <div style="text-align: center; color: white;">
+                <h2 style="font-size: 3rem; margin-bottom: 1rem; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    🚀 You found the secret!
+                </h2>
+                <p style="font-size: 1.2rem; color: #a0a0b0; max-width: 500px;">
+                    Training complete. Model accuracy: 99.97%. 
+                    You have the makings of a great AI researcher.
+                </p>
+                <p style="font-size: 0.9rem; color: #6a6a7a; margin-top: 2rem;">
+                    Click anywhere to close
+                </p>
+            </div>
         `;
-        document.body.appendChild(message);
+        document.body.appendChild(overlay);
         
-        setTimeout(() => {
-            message.style.animation = 'fadeOut 0.5s ease-out forwards';
-            setTimeout(() => message.remove(), 500);
-        }, 3000);
-    };
+        overlay.addEventListener('click', () => {
+            overlay.style.animation = 'fadeOut 0.3s ease';
+            setTimeout(() => overlay.remove(), 300);
+        });
+    }
 
+    // Add fade animations
+    const fadeStyle = document.createElement('style');
+    fadeStyle.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+    `;
+    document.head.appendChild(fadeStyle);
 
+    // ===== MOUSE CURSOR GLOW EFFECT =====
+    const cursorGlow = document.createElement('div');
+    cursorGlow.style.cssText = `
+        position: fixed;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: -1;
+        transform: translate(-50%, -50%);
+        transition: opacity 0.3s ease;
+    `;
+    document.body.appendChild(cursorGlow);
+
+    document.addEventListener('mousemove', (e) => {
+        cursorGlow.style.left = e.clientX + 'px';
+        cursorGlow.style.top = e.clientY + 'px';
+    });
+
+    // Hide on mobile
+    if ('ontouchstart' in window) {
+        cursorGlow.style.display = 'none';
+    }
+
+    // ===== CONSOLE EASTER EGG =====
+    console.log('%c🧠 Dr. Brianna Rhee - AI Research Scientist', 
+        'font-size: 24px; font-weight: bold; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; color: transparent;'
+    );
+    console.log('%cLooking for the source code? Smart move. That\'s how the best engineers learn.', 
+        'font-size: 14px; color: #a0a0b0;'
+    );
+    console.log('%cInterested in collaborating? Reach out: brianna.rhee@research.ai', 
+        'font-size: 12px; color: #6366f1;'
+    );
 });
-
-// ===== CSS ANIMATIONS =====
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes ripple {
-        to {
-            transform: scale(4);
-            opacity: 0;
-        }
-    }
-    
-    @keyframes fade-in-up {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    @keyframes fall {
-        from {
-            transform: translateY(-100px) rotate(0deg);
-            opacity: 1;
-        }
-        to {
-            transform: translateY(100vh) rotate(360deg);
-            opacity: 0;
-        }
-    }
-    
-    @keyframes fadeOut {
-        from {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-        to {
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0.8);
-        }
-    }
-    
-    .animate-in {
-        animation: fadeInUp 0.8s ease-out forwards;
-    }
-    
-    .fade-in-up {
-        animation: fade-in-up 0.8s ease-out forwards;
-    }
-`;
-document.head.appendChild(style); 
